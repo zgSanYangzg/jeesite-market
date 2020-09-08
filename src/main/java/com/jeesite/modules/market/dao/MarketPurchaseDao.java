@@ -10,7 +10,7 @@ import com.jeesite.modules.market.entity.MarketPurchase;
 /**
  * 进货管理DAO接口
  * @author zg
- * @version 2020-09-05
+ * @version 2020-09-08
  */
 @MyBatisDao
 public interface MarketPurchaseDao extends CrudDao<MarketPurchase> {

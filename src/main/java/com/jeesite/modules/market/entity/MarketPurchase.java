@@ -19,7 +19,7 @@ import com.jeesite.common.mybatis.mapper.query.QueryType;
 /**
  * 进货管理Entity
  * @author zg
- * @version 2020-09-05
+ * @version 2020-09-08
  */
 @Table(name="market_purchase", alias="a", columns={
 		@Column(name="id", attrName="id", label="编号", isPK=true),

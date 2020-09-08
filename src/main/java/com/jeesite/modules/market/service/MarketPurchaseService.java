@@ -5,8 +5,6 @@ package com.jeesite.modules.market.service;
 
 import java.util.List;
 
-import com.jeesite.common.lang.DateUtils;
-import com.jeesite.common.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +19,7 @@ import com.jeesite.modules.market.dao.MarketPurchaseGoodDao;
 /**
  * 进货管理Service
  * @author zg
- * @version 2020-09-05
+ * @version 2020-09-08
  */
 @Service
 @Transactional(readOnly=true)
@@ -37,8 +35,6 @@ public class MarketPurchaseService extends CrudService<MarketPurchaseDao, Market
 	 */
 	@Override
 	public MarketPurchase get(MarketPurchase marketPurchase) {
-		if(StringUtils.isEmpty(marketPurchase.getPurchaseOrderNo()))
-			marketPurchase.setPurchaseOrderNo(DateUtils.getDate("yyyyMMddhhss"));
 		MarketPurchase entity = super.get(marketPurchase);
 		if (entity != null){
 			MarketPurchaseGood marketPurchaseGood = new MarketPurchaseGood(entity);
@@ -68,6 +64,7 @@ public class MarketPurchaseService extends CrudService<MarketPurchaseDao, Market
 	public void save(MarketPurchase marketPurchase) {
 		super.save(marketPurchase);
 		// 保存 MarketPurchase子表
+		// todo 存商品 存库存
 		for (MarketPurchaseGood marketPurchaseGood : marketPurchase.getMarketPurchaseGoodList()){
 			if (!MarketPurchaseGood.STATUS_DELETE.equals(marketPurchaseGood.getStatus())){
 				marketPurchaseGood.setMarketPurchaseId(marketPurchase);

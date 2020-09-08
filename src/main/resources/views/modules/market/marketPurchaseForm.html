@@ -19,7 +19,7 @@
 							<label class="control-label col-sm-4" title="">
 								<span class="required hide">*</span> ${text('订单编号')}：<i class="fa icon-question hide"></i></label>
 							<div class="col-sm-8">
-								<#form:input path="purchaseOrderNo" maxlength="50" class="form-control"/>
+								<#form:input path="purchaseOrderNo" maxlength="50" class="form-control" readonly="true"/>
 							</div>
 						</div>
 					</div>
@@ -38,7 +38,7 @@
 							<label class="control-label col-sm-4" title="">
 								<span class="required hide">*</span> ${text('供应商')}：<i class="fa icon-question hide"></i></label>
 							<div class="col-sm-8">
-								<#form:select path="supplierId" items="${suppliers}" itemLabel="supplierName" itemValue="id" class="form-control" blankOption="true" blankOptionLabel="请选择"/>
+								<#form:select path="supplierId" items="${suppliers}" itemLabel="supplierName" itemValue="id"  blankOption="true" blankOptionLabel="请选择" class="form-control " />
 							</div>
 						</div>
 					</div>
@@ -78,7 +78,7 @@
 							<label class="control-label col-sm-4" title="">
 								<span class="required hide">*</span> ${text('付款状态')}：<i class="fa icon-question hide"></i></label>
 							<div class="col-sm-8">
-								<#form:input path="payState" maxlength="1" class="form-control"/>
+								<#form:select path="payState" dictType="market_purchase_pay_type" blankOption="true" class="form-control" />
 							</div>
 						</div>
 					</div>
@@ -145,9 +145,8 @@ $("#marketPurchaseGoodDataGrid").dataGrid({
 	columnModel: [
 		{header:'状态', name:'status', editable:true, hidden:true},
 		{header:'主键', name:'id', editable:true, hidden:true},
-		{header:'${text("备注信息")}', name:'remarks', width:150, editable:true, edittype:'textarea', editoptions:{'maxlength':'500', 'class':'form-control', 'rows':'1'}},
-		{header:'${text("商品名称")}', name:'goodName', width:150, editable:true, edittype:'text', editoptions:{'maxlength':'200', 'class':'form-control'}},
-		{header:'${text("生产日期")}', name:'productDate', width:150, 
+		{header: '${text("商品名称/条码")}', name: 'goodName', width: 300, editable: true, edittype: 'text',editoptions:{'class':'form-control customClick'}},
+		{header:'${text("生产日期")}', name:'productDate', width:150,
 			formatter:'date', formatoptions:{srcformat:'Y-m-d H:i:s',newformat:'Y-m-d H:i:s'},
 			editable:true, edittype:'text', editoptions:{'class':'form-control laydate', 'readonly':'true',
 				dataInit: function(element){
@@ -155,10 +154,9 @@ $("#marketPurchaseGoodDataGrid").dataGrid({
 				}
 			}
 		},
-		{header:'${text("建议价格")}', name:'suggestedPrice', width:150, editable:true, edittype:'text', editoptions:{'class':'form-control number'}},
-		{header:'${text("进价")}', name:'inPrice', width:150, editable:true, edittype:'text', editoptions:{'class':'form-control number'}},
-		{header:'${text("数量")}', name:'goodNum', width:150, editable:true, edittype:'text', editoptions:{'maxlength':'11', 'class':'form-control digits'}},
-		{header:'${text("小计")}', name:'goodCount', width:150, editable:true, edittype:'text', editoptions:{'class':'form-control number'}},
+		{header:'${text("进价")}', name:'inPrice', width:150, editable:true, edittype:'text', editoptions:{'class':'form-control number customPrice'}},
+		{header:'${text("数量")}', name:'goodNum', width:150, editable:true, edittype:'text', editoptions:{'maxlength':'11', 'class':'form-control digits customNum'}},
+		{header:'${text("小计")}', name:'goodCount', width:150, editable:true, edittype:'text', editoptions:{'class':'form-control number customCount'}},
 		{header:'${text("付款日期")}', name:'payDate', width:150, 
 			formatter:'date', formatoptions:{srcformat:'Y-m-d H:i:s',newformat:'Y-m-d H:i:s'},
 			editable:true, edittype:'text', editoptions:{'class':'form-control laydate', 'readonly':'true',
@@ -170,9 +168,6 @@ $("#marketPurchaseGoodDataGrid").dataGrid({
 		{header:'${text("成本价格")}', name:'costPrice', width:150, editable:true, edittype:'text', editoptions:{'class':'form-control number'}},
 		{header:'${text("销售价格")}', name:'salePrice', width:150, editable:true, edittype:'text', editoptions:{'class':'form-control number'}},
 		{header:'${text("会员价格")}', name:'membershipPrice', width:150, editable:true, edittype:'text', editoptions:{'class':'form-control number'}},
-		{header:'${text("单位")}', name:'goodUnit', width:150, editable:true, edittype:'text', editoptions:{'maxlength':'1', 'class':'form-control'}},
-		{header:'${text("父表market_purchase主键")}', name:'marketPurchaseId.id', editable:true, hidden:true},
-		{header:'${text("商品条码")}', name:'goodBarcode', width:150, editable:true, edittype:'text', editoptions:{'maxlength':'50', 'class':'form-control'}},
 		{header:'${text("操作")}', name:'actions', width:80, sortable:false, fixed:true, formatter: function(val, obj, row, act){
 			var actions = [];
 			if (val == 'new'){
@@ -213,4 +208,69 @@ $("#inputForm").validate({
 		}, "json");
     }
 });
+//条码搜索事件
+$("#marketPurchaseGoodDataGrid").on("change",".customClick",function () {
+	let barCode=this.value;
+	if(barCode==null||barCode=="")
+		return;
+	if(!isNaN(barCode)){
+		findInfo(barCode,this.id);
+	}
+
+
+});
+$("#marketPurchaseGoodDataGrid").on("change",".customPrice",function () {
+	let goodNum = $("#"+this.id).parents("tr").find("input[name='goodNum']").val();
+	if(goodNum>0&&this.value>0){
+		let sum =this.value*goodNum;
+		sum = parseInt(sum*100)/100;
+		$("#"+this.id).parents("tr").find("input[name='goodCount']").val(sum);
+	}
+
+});
+$("#marketPurchaseGoodDataGrid").on("change",".customNum",function () {
+	let price=$("#"+this.id).parents("tr").find("input[name='inPrice']").val();
+	if(price>0&this.value>0){
+		let sum =price*this.value;
+		sum = parseInt(sum*100)/100;
+		$("#"+this.id).parents("tr").find("input[name='goodCount']").val(sum);
+	}
+
+});
+setInterval("sumClick()",500);
+var total=0;
+function sumClick(){
+	let temp=0;
+	$("#marketPurchaseGoodDataGrid").find(".customCount").each(function () {
+		if(parseFloat(this.value)>0){
+			temp+=parseFloat(this.value);
+		}
+	})
+	if(temp!=total){
+		total=temp;
+		$("#totalMoney").val(total);
+		$("#payableMoney").val(total);
+		$("#paidMoney").val(total);
+
+	}
+	console.log(temp)
+}
+
+function findInfo(barCode,rowId) {
+	$.ajax({
+		type:"get",
+		url:domain+"/market/marketGood/getGoodInfoByBarCode",
+		data:"barCode="+barCode,
+		success:function success(data){
+			if(data.code!=1)
+				return;
+			// let barcode = data.data.barcode;
+			let goodsName = data.data.goodsName;
+			let price = data.data.price;//价格
+			$("#"+rowId).parents("tr").find("input[name='goodName']").val(goodsName);
+			$("#"+rowId).parents("tr").find("input[name='salePrice']").val(price);
+			$("#"+rowId).parents("tr").find("input[name='goodNum']").val(1);
+		}
+	});
+}
 </script>

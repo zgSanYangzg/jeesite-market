@@ -52,7 +52,9 @@ $('#dataGrid').dataGrid({
 		{header:'${text("进货总额")}', name:'totalMoney', index:'a.total_money', width:150, align:"right", formatter: function(val, obj, row, act){
 			return js.formatNumber(val, 2, false, ''); // 数值类型格式化 (原始数值, 小数位数, 是否千分位, 默认值，金额情况下设置0.00);
 		}},
-		{header:'${text("付款状态")}', name:'payState', index:'a.pay_state', width:150, align:"left"},
+		{header:'${text("付款状态")}', name:'payState', index:'a.pay_state', width:150, align:"center", formatter: function(val, obj, row, act){
+			return js.getDictLabel(${@DictUtils.getDictListJson('market_purchase_pay_type')}, val, '${text("未知")}', true);
+		}},
 		{header:'${text("付款日期")}', name:'payDate', index:'a.pay_date', width:150, align:"center"},
 		{header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
 			var actions = [];
