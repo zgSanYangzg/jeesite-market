@@ -26,7 +26,7 @@ import com.jeesite.modules.market.service.MarketGoodService;
 /**
  * 商品管理Controller
  * @author zg
- * @version 2020-09-02
+ * @version 2020-09-08
  */
 @Controller
 @RequestMapping(value = "${adminPath}/market/marketGood")
@@ -82,6 +82,7 @@ public class MarketGoodController extends BaseController {
 	public String getGoodInfoByBarCode(String barCode) {
 		goodApi.setBarCode(barCode);
 		String info = goodApi.deal();
+		//{"code":1,"msg":"数据返回成功！","data":{"goodsName":"农夫山泉 饮用天然水550ml","barcode":"6921168509256","price":"1.50","brand":"农夫山泉","supplier":"农夫山泉股份有限公司","standard":"550ml"}}
 		System.out.println(info);
 		return info;
 	}

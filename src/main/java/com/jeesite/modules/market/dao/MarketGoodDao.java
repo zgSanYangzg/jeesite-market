@@ -10,9 +10,11 @@ import com.jeesite.modules.market.entity.MarketGood;
 /**
  * 商品管理DAO接口
  * @author zg
- * @version 2020-09-02
+ * @version 2020-09-08
  */
 @MyBatisDao
 public interface MarketGoodDao extends CrudDao<MarketGood> {
-	
+	public MarketGood findByBarCode(String barcode);
+
+	void updateByCustom(MarketGood marketGood);
 }

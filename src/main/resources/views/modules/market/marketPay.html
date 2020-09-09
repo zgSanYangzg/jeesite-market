@@ -1,0 +1,57 @@
+<% layout('/layouts/default.html', {title: '收银', libs: ['dataGrid']}){ %>
+<div class="main-content">
+    <div class="box box-main">
+        <div class="box-header">
+            <div class="box-title">
+                <i class="fa icon-notebook"></i> ${text('收银')}
+            </div>
+            <div class="box-tools pull-right">
+
+            </div>
+        </div>
+        <div class="box-body">
+            <#form:form id="searchForm" method="post" class="form-inline">
+            <div class="form-group">
+                <label class="control-label">${text('条码/名称')}：</label>
+                <div class="control-inline width-300">
+                    <#form:input path="goodName" maxlength="300" class="form-control width-300"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <button type="button" class="btn btn-primary btn-sm">${text('查询')}</button>
+                <button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
+            </div>
+        </#form:form>
+        <table id="dataGrid"></table>
+        <div id="dataGridPage"></div>
+    </div>
+</div>
+</div>
+<% } %>
+<script>
+    // 初始化DataGrid对象
+    $('#dataGrid').dataGrid({
+        // searchForm: $("#searchForm"),
+        columnModel: [
+            {header:'${text("条码")}', name:'barcode', index:'a.barcode', width:150, align:"left"},
+            {header:'${text("名称")}', name:'goodName', index:'a.good_name', width:200, align:"left"},
+            {header:'${text("包装规格")}', name:'goodPackagingSpecs', index:'a.good_packaging_specs', width:150, align:"left"},
+            {header:'${text("销售价")}', name:'goodSalePrice', index:'a.good_sale_price', width:150, align:"right", formatter: function(val, obj, row, act){
+                    return js.formatNumber(val, 2, false, ''); // 数值类型格式化 (原始数值, 小数位数, 是否千分位, 默认值，金额情况下设置0.00);
+                }},
+            {header:'${text("库存")}', name:'storeCount', index:'a.store_count', width:150, align:"center"},
+            {header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
+                    var actions = [];
+                <% if(hasPermi('market:marketGood:edit')){ %>
+                        actions.push('<a href="${ctx}/market/marketGood/delete?id='+row.id+'" class="btnList" title="${text("删除商品管理")}" data-confirm="${text("确认要删除该商品管理吗？")}"><i class="fa fa-trash-o"></i></a>&nbsp;');
+                    <% } %>
+                    return actions.join('');
+                }}
+        ],
+        // 加载成功后执行事件
+        ajaxSuccess: function(data){
+
+        }
+    });
+</script>

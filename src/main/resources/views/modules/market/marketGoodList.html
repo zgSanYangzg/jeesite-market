@@ -35,6 +35,12 @@
 					</div>
 				</div>
 				<div class="form-group">
+					<label class="control-label">${text('库存')}：</label>
+					<div class="control-inline">
+						<#form:input path="storeCount" maxlength="5" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
 					<button type="submit" class="btn btn-primary btn-sm">${text('查询')}</button>
 					<button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
 				</div>
@@ -52,20 +58,18 @@ $('#dataGrid').dataGrid({
 	columnModel: [
 		{header:'${text("更新时间")}', name:'updateDate', index:'a.update_date', width:150, align:"center"},
 		{header:'${text("条码")}', name:'barcode', index:'a.barcode', width:150, align:"left"},
-		{header:'${text("类型")}', name:'goodType', index:'a.good_type', width:150, align:"center", formatter: function(val, obj, row, act){
-			return js.getDictLabel(${@DictUtils.getDictListJson('market_good_type')}, val, '${text("未知")}', true);
+		{header:'${text("名称")}', name:'goodName', index:'a.good_name', width:200, align:"left"},
+		{header:'${text("单位")}', name:'goodUnit', index:'a.good_unit', width:150, align:"center", formatter: function(val, obj, row, act){
+			return js.getDictLabel(${@DictUtils.getDictListJson('market_good_unit')}, val, '${text("未知")}', true);
 		}},
-		{header:'${text("名称")}', name:'goodName', index:'a.good_name', width:150, align:"left"},
 		{header:'${text("包装规格")}', name:'goodPackagingSpecs', index:'a.good_packaging_specs', width:150, align:"left"},
-		{header:'${text("成本价")}', name:'goodCostPrice', index:'a.good_cost_price', width:150, align:"right", formatter: function(val, obj, row, act){
-			return js.formatNumber(val, 2, false, ''); // 数值类型格式化 (原始数值, 小数位数, 是否千分位, 默认值，金额情况下设置0.00);
-		}},
 		{header:'${text("销售价")}', name:'goodSalePrice', index:'a.good_sale_price', width:150, align:"right", formatter: function(val, obj, row, act){
 			return js.formatNumber(val, 2, false, ''); // 数值类型格式化 (原始数值, 小数位数, 是否千分位, 默认值，金额情况下设置0.00);
 		}},
 		{header:'${text("建议价")}', name:'goodSuggestPrice', index:'a.good_suggest_price', width:150, align:"right", formatter: function(val, obj, row, act){
 			return js.formatNumber(val, 2, false, ''); // 数值类型格式化 (原始数值, 小数位数, 是否千分位, 默认值，金额情况下设置0.00);
 		}},
+		{header:'${text("库存")}', name:'storeCount', index:'a.store_count', width:150, align:"center"},
 		{header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
 			var actions = [];
 			<% if(hasPermi('market:marketGood:edit')){ %>

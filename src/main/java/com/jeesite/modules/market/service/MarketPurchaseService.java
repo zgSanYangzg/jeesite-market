@@ -5,6 +5,8 @@ package com.jeesite.modules.market.service;
 
 import java.util.List;
 
+import com.jeesite.modules.market.dao.MarketGoodDao;
+import com.jeesite.modules.market.entity.MarketGood;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +30,9 @@ public class MarketPurchaseService extends CrudService<MarketPurchaseDao, Market
 	@Autowired
 	private MarketPurchaseGoodDao marketPurchaseGoodDao;
 	
+	@Autowired
+	private MarketGoodDao marketGoodDao;
+
 	/**
 	 * 获取单条数据
 	 * @param marketPurchase
@@ -64,15 +69,36 @@ public class MarketPurchaseService extends CrudService<MarketPurchaseDao, Market
 	public void save(MarketPurchase marketPurchase) {
 		super.save(marketPurchase);
 		// 保存 MarketPurchase子表
+
 		// todo 存商品 存库存
 		for (MarketPurchaseGood marketPurchaseGood : marketPurchase.getMarketPurchaseGoodList()){
 			if (!MarketPurchaseGood.STATUS_DELETE.equals(marketPurchaseGood.getStatus())){
 				marketPurchaseGood.setMarketPurchaseId(marketPurchase);
 				if (marketPurchaseGood.getIsNewRecord()){
 					marketPurchaseGoodDao.insert(marketPurchaseGood);
+					if (marketPurchaseGood!=null&&marketPurchaseGood.getGoodBarcode()!=null&&
+							marketPurchaseGood.getGoodNum()!=null) {
+						if(marketGoodDao.findByBarCode(marketPurchaseGood.getGoodBarcode())==null){
+							logger.info("不存在商品,需要存储");
+							MarketGood marketGood = new MarketGood();
+							marketGood.setBarcode(marketPurchaseGood.getGoodBarcode());
+							marketGood.setGoodName(marketPurchaseGood.getGoodName());
+							marketGood.setStoreCount(marketPurchaseGood.getGoodNum().intValue());
+							marketGood.setGoodSuggestPrice(marketPurchaseGood.getSalePrice());
+							marketGood.setGoodSalePrice(marketPurchaseGood.getSalePrice());
+							marketGoodDao.insert(marketGood);
+
+						}else{//增加库存
+							MarketGood marketGood = new MarketGood();
+							marketGood.setBarcode(marketPurchaseGood.getGoodBarcode());
+							marketGood.setStoreCount(marketPurchaseGood.getGoodNum().intValue());
+							marketGoodDao.updateByCustom(marketGood);
+						}
+					}
 				}else{
 					marketPurchaseGoodDao.update(marketPurchaseGood);
 				}
+
 			}else{
 				marketPurchaseGoodDao.delete(marketPurchaseGood);
 			}

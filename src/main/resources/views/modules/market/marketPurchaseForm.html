@@ -145,6 +145,7 @@ $("#marketPurchaseGoodDataGrid").dataGrid({
 	columnModel: [
 		{header:'状态', name:'status', editable:true, hidden:true},
 		{header:'主键', name:'id', editable:true, hidden:true},
+		{header:'条码', name:'goodBarcode', editable:true, hidden:true},
 		{header: '${text("商品名称/条码")}', name: 'goodName', width: 300, editable: true, edittype: 'text',editoptions:{'class':'form-control customClick'}},
 		{header:'${text("生产日期")}', name:'productDate', width:150,
 			formatter:'date', formatoptions:{srcformat:'Y-m-d H:i:s',newformat:'Y-m-d H:i:s'},
@@ -214,31 +215,37 @@ $("#marketPurchaseGoodDataGrid").on("change",".customClick",function () {
 	if(barCode==null||barCode=="")
 		return;
 	if(!isNaN(barCode)){
-		findInfo(barCode,this.id);
+		findInfo(barCode,$(this).attr("rowid"));
 	}
 
 
 });
+//商品进价改变事件  计算小计
 $("#marketPurchaseGoodDataGrid").on("change",".customPrice",function () {
-	let goodNum = $("#"+this.id).parents("tr").find("input[name='goodNum']").val();
+	let rowid=$(this).attr("rowid");
+	let goodNum = $("#"+rowid+"_goodNum").val();
 	if(goodNum>0&&this.value>0){
 		let sum =this.value*goodNum;
 		sum = parseInt(sum*100)/100;
-		$("#"+this.id).parents("tr").find("input[name='goodCount']").val(sum);
+		$("#"+rowid+"_goodCount").val(sum);
 	}
 
 });
+//商品数量改变事件  计算小计
 $("#marketPurchaseGoodDataGrid").on("change",".customNum",function () {
-	let price=$("#"+this.id).parents("tr").find("input[name='inPrice']").val();
+	let rowid=$(this).attr("rowid");
+	let price=$("#"+rowid+"_inPrice").val();
 	if(price>0&this.value>0){
 		let sum =price*this.value;
 		sum = parseInt(sum*100)/100;
-		$("#"+this.id).parents("tr").find("input[name='goodCount']").val(sum);
+		$("#"+rowid+"_goodCount").val(sum);
 	}
 
 });
+//定时计算合计
 setInterval("sumClick()",500);
 var total=0;
+//合计方法
 function sumClick(){
 	let temp=0;
 	$("#marketPurchaseGoodDataGrid").find(".customCount").each(function () {
@@ -255,22 +262,33 @@ function sumClick(){
 	}
 	console.log(temp)
 }
-
+//根据条码查询物品信息  赋值
 function findInfo(barCode,rowId) {
+	clearTrData(rowId);//赋值前 清空值
 	$.ajax({
 		type:"get",
-		url:domain+"/market/marketGood/getGoodInfoByBarCode",
+		url:"${ctx}/market/marketGood/getGoodInfoByBarCode",
 		data:"barCode="+barCode,
 		success:function success(data){
 			if(data.code!=1)
 				return;
-			// let barcode = data.data.barcode;
+			let barcode = data.data.barcode;
 			let goodsName = data.data.goodsName;
 			let price = data.data.price;//价格
-			$("#"+rowId).parents("tr").find("input[name='goodName']").val(goodsName);
-			$("#"+rowId).parents("tr").find("input[name='salePrice']").val(price);
-			$("#"+rowId).parents("tr").find("input[name='goodNum']").val(1);
+			$("#"+rowId+"_goodName").val(goodsName);
+			$("#"+rowId+"_salePrice").val(price);
+			$("#"+rowId+"_goodNum").val(1);
+			$("#"+rowId+"_goodBarcode").val(barcode);
 		}
 	});
+}
+//清空方法
+function clearTrData(rowId) {
+	console.log(rowId)
+	$("#"+rowId+"_inPrice").val("");
+	$("#"+rowId+"_salePrice").val("");
+	$("#"+rowId+"_goodNum").val("");
+	$("#"+rowId+"_goodBarcode").val("");
+	$("#"+rowId+"_goodCount").val("");
 }
 </script>

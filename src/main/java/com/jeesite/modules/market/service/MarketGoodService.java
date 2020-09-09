@@ -17,7 +17,7 @@ import com.jeesite.modules.file.utils.FileUploadUtils;
 /**
  * 商品管理Service
  * @author zg
- * @version 2020-09-02
+ * @version 2020-09-08
  */
 @Service
 @Transactional(readOnly=true)

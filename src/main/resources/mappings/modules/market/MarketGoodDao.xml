@@ -11,5 +11,10 @@
 		</where>
 		ORDER BY ${sqlMap.order.toSql()}
 	</select> -->
-	
+	<select id="findByBarCode" resultType="MarketGood">
+		SELECT id  FROM market_good where barcode=#{barcode} and status=0
+	</select>
+	<update id="updateByCustom" >
+		update  market_good set store_count=store_count+#{storeCount} where barcode=#{barcode} and status=0
+	</update>
 </mapper>

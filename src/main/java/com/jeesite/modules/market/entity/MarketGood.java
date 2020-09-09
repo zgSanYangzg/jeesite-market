@@ -13,7 +13,7 @@ import com.jeesite.common.mybatis.mapper.query.QueryType;
 /**
  * 商品管理Entity
  * @author zg
- * @version 2020-09-02
+ * @version 2020-09-08
  */
 @Table(name="market_good", alias="a", columns={
 		@Column(name="id", attrName="id", label="编号", isPK=true),
@@ -32,6 +32,7 @@ import com.jeesite.common.mybatis.mapper.query.QueryType;
 		@Column(name="good_cost_price", attrName="goodCostPrice", label="成本价", isQuery=false),
 		@Column(name="good_sale_price", attrName="goodSalePrice", label="销售价", isQuery=false),
 		@Column(name="good_suggest_price", attrName="goodSuggestPrice", label="建议价", isQuery=false),
+		@Column(name="store_count", attrName="storeCount", label="库存"),
 	}, orderBy="a.update_date DESC"
 )
 public class MarketGood extends DataEntity<MarketGood> {
@@ -51,6 +52,7 @@ public class MarketGood extends DataEntity<MarketGood> {
 	private Double goodCostPrice;		// 成本价
 	private Double goodSalePrice;		// 销售价
 	private Double goodSuggestPrice;		// 建议价
+	private Integer storeCount;		// 库存
 	
 	public MarketGood() {
 		this(null);
@@ -180,6 +182,14 @@ public class MarketGood extends DataEntity<MarketGood> {
 
 	public void setGoodSuggestPrice(Double goodSuggestPrice) {
 		this.goodSuggestPrice = goodSuggestPrice;
+	}
+	
+	public Integer getStoreCount() {
+		return storeCount;
+	}
+
+	public void setStoreCount(Integer storeCount) {
+		this.storeCount = storeCount;
 	}
 	
 }
