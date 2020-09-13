@@ -14,6 +14,18 @@
 	<select id="findByBarCode" resultType="MarketGood">
 		SELECT id  FROM market_good where barcode=#{barcode} and status=0
 	</select>
+	<select id="findEntityByParam" resultType="MarketGood">
+		SELECT
+		ent.id,
+		ent.barcode,
+		ent.good_name,
+		ent.good_sale_price,
+		ent.good_packaging_specs
+		FROM
+		market_good AS ent
+		where ent.`status`=0
+		and (ent.barcode =#{parameter} or ent.good_name like #{parameter})
+	</select>
 	<update id="updateByCustom" >
 		update  market_good set store_count=store_count+#{storeCount} where barcode=#{barcode} and status=0
 	</update>

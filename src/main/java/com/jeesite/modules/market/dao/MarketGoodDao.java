@@ -14,7 +14,9 @@ import com.jeesite.modules.market.entity.MarketGood;
  */
 @MyBatisDao
 public interface MarketGoodDao extends CrudDao<MarketGood> {
-	public MarketGood findByBarCode(String barcode);
+	MarketGood findByBarCode(String barcode);
 
 	void updateByCustom(MarketGood marketGood);
+
+	MarketGood findEntityByParam(String parameter);
 }

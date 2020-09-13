@@ -12,15 +12,14 @@
         <div class="box-body">
             <#form:form id="searchForm" method="post" class="form-inline">
             <div class="form-group">
-                <label class="control-label">${text('条码/名称')}：</label>
-                <div class="control-inline width-300">
-                    <#form:input path="goodName" maxlength="300" class="form-control width-300"/>
+                <label class="control-label">${text('条码')}：</label>
+                <div class="control-inline width-260">
+                    <#form:input path="goodName" id="searchParam" maxlength="120" class="form-control width-260"/>
                 </div>
             </div>
 
             <div class="form-group">
-                <button type="button" class="btn btn-primary btn-sm">${text('查询')}</button>
-                <button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
+                <button type="button" class="btn btn-primary btn-sm customAdd">${text('添加')}</button>
             </div>
         </#form:form>
         <table id="dataGrid"></table>
@@ -30,17 +29,36 @@
 </div>
 <% } %>
 <script>
+    $(".customAdd").on("click",function () {
+        let param = $("#searchParam").val();
+        $.ajax({
+            type:"get",
+            url:"${ctx}/market/marketPay/listData",
+            data:{"parameter":param},
+            success:function success(data) {
+                console.log(data)
+                $('#dataGrid').jqGrid('addRow', { position: 'last',
+                    addRowParams: {keys: false, focusField: true},
+                    initdata: data
+                });
+            }
+        });
+
+    });
     // 初始化DataGrid对象
     $('#dataGrid').dataGrid({
-        // searchForm: $("#searchForm"),
+        url:"",
+        datatype:"local",
         columnModel: [
             {header:'${text("条码")}', name:'barcode', index:'a.barcode', width:150, align:"left"},
             {header:'${text("名称")}', name:'goodName', index:'a.good_name', width:200, align:"left"},
-            {header:'${text("包装规格")}', name:'goodPackagingSpecs', index:'a.good_packaging_specs', width:150, align:"left"},
             {header:'${text("销售价")}', name:'goodSalePrice', index:'a.good_sale_price', width:150, align:"right", formatter: function(val, obj, row, act){
                     return js.formatNumber(val, 2, false, ''); // 数值类型格式化 (原始数值, 小数位数, 是否千分位, 默认值，金额情况下设置0.00);
                 }},
-            {header:'${text("库存")}', name:'storeCount', index:'a.store_count', width:150, align:"center"},
+            {header:'${text("数量")}', name:'goodNum', width:150, align:"left",editable:true, editoptions:{defaultValue:"1"}
+            },
+            {header:'${text("小计")}', name:'goodCount', width:150, align:"left"},
+            {header:'${text("包装规格")}', name:'goodPackagingSpecs', index:'a.good_packaging_specs', width:150, align:"left"},
             {header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
                     var actions = [];
                 <% if(hasPermi('market:marketGood:edit')){ %>
